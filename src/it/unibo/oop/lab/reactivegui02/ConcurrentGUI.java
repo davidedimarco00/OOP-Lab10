@@ -2,8 +2,6 @@ package it.unibo.oop.lab.reactivegui02;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JButton;
@@ -42,30 +40,9 @@ public class ConcurrentGUI extends JFrame {
         this.setVisible(true);
         new Thread(agent).start();
 
-
-        up.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(final ActionEvent arg0) {
-                agent.setDirection(true);
-            }
-        });
-
-        stop.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(final ActionEvent arg0) {
-                agent.stopCounting();
-            }
-        });
-
-        down.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(final ActionEvent arg0) {
-                agent.setDirection(false);
-            }
-        });
+        up.addActionListener(e -> agent.setDirection(true));
+        stop.addActionListener(e -> agent.stopCounting());
+        down.addActionListener(e -> agent.setDirection(false));
     }
 
     public Agent getAgent() {
@@ -74,7 +51,7 @@ public class ConcurrentGUI extends JFrame {
 
     public class Agent implements Runnable {
 
-        private volatile int counter;
+        private int counter;
         private volatile boolean stop;
         private volatile boolean direction;
 
@@ -85,11 +62,7 @@ public class ConcurrentGUI extends JFrame {
                     SwingUtilities.invokeAndWait(() -> { 
                         ConcurrentGUI.this.label.setText(String.valueOf(this.counter));
                      });
-                    if (this.direction) {
-                        this.counter++;
-                    } else {
-                        this.counter--;
-                    }
+                    this.counter += this.direction ? +1 : -1;
                     Thread.sleep(100);
                 } catch (InterruptedException | InvocationTargetException ex) { 
                     System.err.println("Errore nell' esecuzione del thread");
@@ -100,20 +73,15 @@ public class ConcurrentGUI extends JFrame {
 
         public void stopCounting() {
             this.stop = true;
-            try {
-                SwingUtilities.invokeLater(() -> {
-                    ConcurrentGUI.this.up.setEnabled(false);
-                    ConcurrentGUI.this.down.setEnabled(false);
-                 });
-            } catch (Exception ex) { 
-                System.err.println("Errore nell' esecuzione del thread");
-                ex.printStackTrace();
-            }
+            SwingUtilities.invokeLater(() -> {
+                ConcurrentGUI.this.up.setEnabled(false);
+                ConcurrentGUI.this.down.setEnabled(false);
+             });
         }
+
         public void setDirection(final boolean direction) {
             this.direction = direction;
         }
-
     }
 }
 

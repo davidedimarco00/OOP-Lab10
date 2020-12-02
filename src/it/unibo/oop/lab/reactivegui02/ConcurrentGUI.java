@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -90,7 +91,8 @@ public class ConcurrentGUI extends JFrame {
                         this.counter--;
                     }
                     Thread.sleep(100);
-                } catch (Exception ex) { 
+                } catch (InterruptedException | InvocationTargetException ex) { 
+                    System.err.println("Errore nell' esecuzione del thread");
                     ex.printStackTrace();
                 }
             }
@@ -103,7 +105,8 @@ public class ConcurrentGUI extends JFrame {
                     ConcurrentGUI.this.up.setEnabled(false);
                     ConcurrentGUI.this.down.setEnabled(false);
                  });
-            } catch (final Exception ex) { 
+            } catch (Exception ex) { 
+                System.err.println("Errore nell' esecuzione del thread");
                 ex.printStackTrace();
             }
         }
@@ -112,7 +115,5 @@ public class ConcurrentGUI extends JFrame {
         }
 
     }
-    
-    
 }
 

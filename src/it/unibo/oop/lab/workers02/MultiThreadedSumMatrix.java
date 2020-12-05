@@ -6,24 +6,24 @@ import java.util.List;
 
 public class MultiThreadedSumMatrix implements SumMatrix {
 
-    private final int NUM_THREADS;
+    private final int numThreads;
 
     public MultiThreadedSumMatrix(final int n) {
-        this.NUM_THREADS = n;
+        this.numThreads = n;
     }
 
     @Override
     public double sum(final double[][] matrix) {
-        final int nElem = matrix.length / NUM_THREADS + matrix.length % NUM_THREADS; 
+        final int nElem = matrix.length / numThreads + matrix.length % numThreads; 
         int startIndex = 0; //punto di partenza da dove contare gli elementi
 
         final List<Worker> workers = new ArrayList<>();
-        for (int i = 0; i < NUM_THREADS; i++) { //per ogni thread
+        for (int i = 0; i < numThreads; i++) { //per ogni thread
             workers.add(new Worker(matrix, nElem, startIndex)); //aggiungo un worker alla lista dei worker
             startIndex += nElem;
         }
         //faccio partire i workers tutti insieme
-        for (Worker w: workers) {
+        for (final Worker w: workers) {
             w.start();
         }
         double sum = 0;
@@ -35,7 +35,6 @@ public class MultiThreadedSumMatrix implements SumMatrix {
                 //aggiungo alla somma totale quello che ha calcolato il thread
                 sum += w.getResult();
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } 
         }
@@ -43,7 +42,7 @@ public class MultiThreadedSumMatrix implements SumMatrix {
     }
 
     private static class Worker extends Thread {
-        private final double matrix[][];
+        private final double[][] matrix;
         private final int nElem; //numero di elementi da sommare
         private final int startIndex;
         private double result;
@@ -53,7 +52,7 @@ public class MultiThreadedSumMatrix implements SumMatrix {
          * @param nElem numero di elementi da contare
          * @param startIndex indice 
          */
-        Worker(final double matrix[][], final int nElem, final int startIndex) {
+        Worker(final double[][] matrix, final int nElem, final int startIndex) {
             this.matrix = Arrays.copyOf(matrix, matrix.length);
             this.nElem = nElem;
             this.startIndex = startIndex;

@@ -60,7 +60,7 @@ public class MultiThreadedSumMatrix implements SumMatrix {
 
         @Override
         public void run() {
-            for (int i = this.startIndex; i < this.startIndex + this.nElem; i++) {
+            for (int i = this.startIndex; i < this.startIndex + this.nElem && i < matrix.length; i++) {
                 for (final double d: matrix[i]) { //per ogni elemento della riga
                     result += d;
                 }
